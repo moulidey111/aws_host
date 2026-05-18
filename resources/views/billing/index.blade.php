@@ -174,72 +174,145 @@
         </div>
     </div>
 
-    {{-- BILL PREVIEW MODAL --}}
-    <div id="billPreviewModal" class="bill-modal-overlay">
-        <div class="bill-modal-card">
-            <div class="bill-modal-header">
+   {{-- RECEIPT STYLE BILL PREVIEW MODAL --}}
+<div id="billPreviewModal" class="bill-modal-overlay">
+    <div class="receipt-modal-wrapper">
+
+        <div class="receipt-paper">
+
+            {{-- HEADER --}}
+            <div class="receipt-header">
+                <h2>FINAL POS</h2>
+                <p>Retail Billing System</p>
+                <p>{{ now()->format('d/m/Y h:i A') }}</p>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            {{-- BILL INFO --}}
+            <div class="receipt-info-grid">
                 <div>
-                    <h2>Bill Preview</h2>
-                    <p>Review all items and payable amount before payment.</p>
-                </div>
-                <button type="button" id="closeBillPreviewBtn" class="bill-modal-close-btn">&times;</button>
-            </div>
-
-            <div class="bill-modal-body">
-                <div class="bill-preview-top">
-                    <div class="bill-preview-customer">
-                        <h3>Customer Details</h3>
-                        <p id="previewCustomerType"><strong>Type:</strong> -</p>
-                        <p id="previewCustomerName"><strong>Name:</strong> -</p>
-                        <p id="previewCustomerPhone"><strong>Phone:</strong> -</p>
-                    </div>
-
-                    <div class="bill-preview-summary-box">
-                        <h3>Bill Summary</h3>
-                        <p><strong>Total Items:</strong> {{ $totalItems }}</p>
-                        <p><strong>Gross Total:</strong> ₹{{ number_format($cartTotal, 2) }}</p>
-                        <p class="payable-amount"><strong>Total Payable:</strong> ₹{{ number_format($cartTotal, 2) }}</p>
-                    </div>
+                    <strong>Bill No:</strong><br>
+                    #{{ now()->format('YmdHis') }}
                 </div>
 
-                <div class="table-wrapper" style="margin-top: 20px;">
-                    <table class="custom-table bill-preview-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Product</th>
-                                <th>Barcode</th>
-                                <th>Price</th>
-                                <th>Qty</th>
-                                <th>Line Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($cart as $index => $item)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item['product_name'] }}</td>
-                                    <td>{{ $item['barcode'] }}</td>
-                                    <td>₹{{ number_format($item['price'], 2) }}</td>
-                                    <td>{{ $item['quantity'] }}</td>
-                                    <td>₹{{ number_format($item['line_total'], 2) }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="empty-state">Cart is empty. Add products before generating bill.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <div style="text-align:right;">
+                    <strong>Date:</strong><br>
+                    {{ now()->format('d/m/Y') }}
                 </div>
             </div>
 
-            <div class="bill-modal-footer">
-                <button type="button" id="cancelBillPreviewBtn" class="secondary-action-btn">Close</button>
-                <button type="submit" form="generateBillForm" class="primary-action-btn pay-btn">Pay</button>
+            <div class="receipt-divider"></div>
+
+            {{-- CUSTOMER --}}
+            <div class="receipt-customer-section">
+                <p id="previewCustomerName"><strong>Name:</strong> -</p>
+                <p id="previewCustomerPhone"><strong>Phone:</strong> -</p>
+                <p id="previewCustomerType"><strong>Type:</strong> -</p>
             </div>
+
+            <div class="receipt-divider"></div>
+
+            {{-- PRODUCTS --}}
+            <table class="receipt-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Amt</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($cart as $item)
+                        <tr>
+                            <td>
+                                {{ $item['product_name'] }}
+                                <div class="receipt-item-rate">
+                                    ₹{{ number_format($item['price'], 2) }}
+                                </div>
+                            </td>
+
+                            <td>{{ $item['quantity'] }}</td>
+
+                            <td>
+                                ₹{{ number_format($item['line_total'], 2) }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" style="text-align:center;">
+                                Cart Empty
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            <div class="receipt-divider"></div>
+
+            {{-- SUMMARY --}}
+            @php
+                $taxAmount = ($cartTotal * 5) / 100;
+                $netPayable = $cartTotal + $taxAmount;
+            @endphp
+
+            <div class="receipt-summary">
+                <div class="receipt-summary-row">
+                    <span>Subtotal</span>
+                    <span>₹{{ number_format($cartTotal, 2) }}</span>
+                </div>
+
+                <div class="receipt-summary-row">
+                    <span>Discount</span>
+                    <span>₹0.00</span>
+                </div>
+
+                <div class="receipt-summary-row">
+                    <span>Tax (5%)</span>
+                    <span>₹{{ number_format($taxAmount, 2) }}</span>
+                </div>
+
+                <div class="receipt-total-row">
+                    <span>NET PAYABLE</span>
+                    <span>₹{{ number_format($netPayable, 2) }}</span>
+                </div>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            {{-- FOOTER --}}
+            <div class="receipt-footer">
+                <p>Items Sold: {{ $totalItems }}</p>
+
+                <div class="receipt-thank-you">
+                    <p>***** THANK YOU *****</p>
+                    <p>Visit Again</p>
+                </div>
+
+                <p class="receipt-powered">
+                    Powered by Final POS
+                </p>
+            </div>
+
+            {{-- ACTIONS --}}
+            <div class="receipt-actions">
+                <button type="button"
+                        id="cancelBillPreviewBtn"
+                        class="receipt-close-btn">
+                    Close
+                </button>
+
+                <button type="submit"
+                        form="generateBillForm"
+                        class="receipt-pay-btn">
+                    Pay Bill
+                </button>
+            </div>
+
         </div>
     </div>
+</div>
 
     <script>
         const customerType = document.getElementById('customer_type');

@@ -37,7 +37,7 @@
                     Better Retail Control.
                 </h1>
                 <p>
-                    Welcome to <strong>POS System</strong> made by <strong>VIKKY</strong> —
+                    Welcome to <strong>POS System</strong> made by <strong>mouli</strong> —
                     a modern retail billing and management solution built for products,
                     customers, orders, and smooth daily shop counter operations.
                 </p>

@@ -20,14 +20,17 @@ Route::get('/', function () {
 | Guest Routes (Only for not logged-in users)
 |--------------------------------------------------------------------------
 */
-Route::middleware('check.guest')->group(function () {
-    // Register
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login.form');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
     Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-    // Login
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login.form');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+    // OTP Verification Routes
+    Route::get('/verify-otp', [AuthController::class, 'showVerifyOtp'])->name('verify.otp.form');
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp.submit');
+    Route::post('/resend-otp', [AuthController::class, 'resendOtp'])->name('verify.otp.resend');
 });
 
 /*
